@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abdlmnsr | Portfolio 2026</title>
     
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1006/1006363.png">
@@ -37,6 +36,7 @@
             transition: all 0.3s ease;
             opacity: 0.5;
             font-size: 0.75rem;
+            cursor: pointer;
         }
         .nav-item.active, .nav-item:hover {
             opacity: 1;
@@ -73,9 +73,10 @@
             <a href="education.html" class="nav-item">Educations</a>
             <a href="certificates.html" class="nav-item">Certificates</a>
             <a href="contact.html" class="nav-item">Contact</a>
+            <a href="smart_campus.html" class="nav-item">Showcase</a>
         </div>
 
-        <button id="hamburger" class="md:hidden flex flex-col gap-1.5 z-[120] p-2">
+        <button id="hamburger" class="md:hidden flex flex-col gap-1.5 z-[120] p-2 focus:outline-none">
             <span class="w-6 h-0.5 bg-white transition-all duration-300 origin-center"></span>
             <span class="w-6 h-0.5 bg-white transition-all duration-300"></span>
             <span class="w-6 h-0.5 bg-white transition-all duration-300 origin-center"></span>
@@ -83,7 +84,7 @@
     </nav>
 
     <div id="mobile-menu" class="fixed inset-0 z-[105] flex-col items-center justify-center gap-10">
-        <a href="home.html" class="nav-item active">Home</a>
+        <a href="home.html" class="nav-item">Home</a>
         <a href="about.html" class="nav-item">About</a>
         <a href="github.html" class="nav-item">Project</a>
         <a href="skills.html" class="nav-item">Skills</a>
@@ -91,16 +92,18 @@
         <a href="education.html" class="nav-item">Educations</a>
         <a href="certificates.html" class="nav-item">Certificates</a>
         <a href="contact.html" class="nav-item">Contact</a>
+        <a href="smart_campus.html" class="nav-item">Showcase</a>
     </div>
 
     <main class="min-h-screen flex items-center justify-center px-4 md:px-6 pt-32 pb-12">
         <div id="content-area" class="w-full max-w-6xl content-frame">
-            <!-- AJAX Content Loads Here -->
-        </div>
+            </div>
     </main>
 
     <script>
         $(document).ready(function() {
+            
+            // 1. Fungsi Utama Load Halaman
             function loadPage(url) {
                 console.log("Memuat halaman:", url);
                 $('#content-area').fadeOut(200, function() {
@@ -114,6 +117,7 @@
                 });
             }
 
+            // 2. Fungsi Toggle Mobile Menu
             function toggleMenu() {
                 const menu = $('#mobile-menu');
                 const isHidden = menu.css('display') === 'none';
@@ -133,10 +137,12 @@
                 $('#hamburger span:nth-child(3)').toggleClass('-rotate-45 -translate-y-2');
             }
 
+            // 3. Event Listener Klik Hamburger
             $('#hamburger').click(function() {
                 toggleMenu();
             });
 
+            // 4. Event Listener Navigasi Utama & Mobile
             $('#main-nav a, #mobile-menu a').click(function(e) {
                 e.preventDefault();
                 const url = $(this).attr('href');
@@ -151,9 +157,27 @@
                 loadPage(url);
             });
 
+            // 5. Menangani link di dalam konten AJAX (seperti tombol back atau link internal)
+            $(document).on('click', '#content-area a', function(e) {
+                const url = $(this).attr('href');
+                
+                // Cek apakah link adalah link internal .html
+                if (url && url.endsWith('.html') && !url.startsWith('http')) {
+                    e.preventDefault();
+                    
+                    // Update status menu aktif
+                    $('.nav-item').removeClass('active');
+                    const targetNav = url === 'index.html' ? 'home.html' : url;
+                    $(`a[href="${targetNav}"]`).addClass('active');
+
+                    loadPage(targetNav === 'index.html' ? 'home.html' : targetNav);
+                }
+            });
+
+            // 6. Inisialisasi Halaman Pertama
             loadPage('home.html');
 
-            // Service Worker Registration
+            // 7. Service Worker Registration
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js')
                     .then(reg => console.log('SW Registered', reg))
